@@ -1,264 +1,309 @@
-
+// Alunos: Andre Felipe Guimaraes Herzfeld, Rafael Mehrle Kraemer e Thiago Fernandes Jacques
+#ifndef LISTA_SIMPLESMENTE_ENCADEADA_H
+#define LISTA_SIMPLESMENTE_ENCADEADA_H
 #include <iostream>
+
 using namespace std;
 
-template <typename TIPO>
-struct Telemento
+template <typename tipo>
+struct elemento
 {
-    TIPO dado;
-    Telemento<TIPO> *proximo;
+
+    tipo dado;
+    elemento *proximo;
 };
 
-template <typename TIPO>
-struct ListaEncadeada
+template <typename tipo>
+struct lista
 {
-    Telemento<TIPO> *inicio;
+
+    elemento<tipo> *inicio;
+    int quantidade;
 };
 
-template <typename TIPO>
-void inicializaLista(ListaEncadeada<TIPO> &lista)
+template <typename tipo>
+bool inserir_elemento_final(lista<tipo> &x, tipo novo)
 {
-    lista.inicio = NULL;
-}
 
-template <typename TIPO>
-bool inserirElementoInicio(ListaEncadeada<TIPO> &lista, TIPO dadoInsere)
-{
-    Telemento<TIPO> *novo = new Telemento<TIPO>;
-    novo->dado = dadoInsere;
-    novo->proximo = lista.inicio;
-    lista.inicio = novo;
-    return true;
-}
+    elemento<tipo> *novoElemento = new elemento<tipo>;
+    novoElemento->dado = novo;
+    novoElemento->proximo = NULL;
 
-template <typename TIPO>
-bool insereFinal(ListaEncadeada<TIPO> &lista, TIPO dadoInsere)
-{
-    Telemento<TIPO> *novo = new Telemento<TIPO>;
-    novo->dado = dadoInsere;
-    novo->proximo = NULL;
-
-    if (lista.inicio == NULL)
+    if (x.inicio == NULL)
     {
-        lista.inicio = novo;
-        return true;
+        x.inicio = novoElemento;
+        x.quantidade++;
     }
     else
     {
-        Telemento<TIPO> *intermediario = lista.inicio;
-        while (intermediario->proximo != NULL)
-        {
-            intermediario = intermediario->proximo;
-        }
-        intermediario->proximo = novo;
-        return true;
-    }
-}
-
-template <typename TIPO>
-bool inserePosicao(ListaEncadeada<TIPO> &lista, TIPO dado, int posicao)
-{
-    if (posicao < 0)
-    {
-        cout << "Posição inválida!" << endl;
-        return false;
-    }
-
-    Telemento<TIPO> *novo = new Telemento<TIPO>;
-    novo->dado = dado;
-    novo->proximo = NULL;
-
-    if (posicao == 0)
-    {
-        inserirElementoInicio(lista, dado);
-        return true;
-    }
-
-    Telemento<TIPO> *aux = lista.inicio;
-    for (int i = 0; i < posicao - 1; i++)
-    {
-        if (aux == NULL || aux->proximo == NULL)
-        {
-            cout << "Posição inválida!" << endl;
-            delete novo;
-            return false;
-        }
-        aux = aux->proximo;
-    }
-
-    novo->proximo = aux->proximo;
-    aux->proximo = novo;
-    return true;
-}
-
-template <typename TIPO>
-void exibeLista(const ListaEncadeada<TIPO> &lista)
-{
-    Telemento<TIPO> *atual = lista.inicio;
-    while (atual != NULL)
-    {
-        cout << atual->dado << " -> ";
-        atual = atual->proximo;
-    }
-    cout << "NULL" << endl;
-}
-template <typename TIPO>
-void removeInicio(ListaEncadeada<TIPO> &lista)
-{
-    if (lista.inicio == NULL)
-    {
-        cout << "Lista vaiza";
-    }
-    else
-    {
-        lista.inicio = lista.inicio->proximo;
-    }
-}
-template <typename TIPO>
-void removeFinal(ListaEncadeada<TIPO> &lista)
-{
-    if (lista.inicio == NULL)
-    {
-        cout << "Lista vaiza";
-    }
-    else
-    {
-        Telemento<TIPO> *aux = lista.inicio;
-        Telemento<TIPO> *aux2 = new Telemento<TIPO>;
+        elemento<tipo> *aux = x.inicio;
         while (aux->proximo != NULL)
         {
-            aux2 = aux;
-            aux = aux->proximo;
+            aux->proximo = aux->proximo->proximo;
         }
-        aux2->proximo = NULL;
-    }
-}
-template <typename TIPO>
-void removePosicao(ListaEncadeada<TIPO> &lista, int posicao)
-{
-    if (lista.inicio == NULL)
-    {
-        cout << "Lista vazia" << endl;
-        return;
-    }
+        aux->proximo = novoElemento;
+        x.quantidade++;
 
-    Telemento<TIPO> *aux = lista.inicio;
-    Telemento<TIPO> *anterior = nullptr;
-
-    // Se a posição for 0, remover o primeiro elemento
-    if (posicao == 0)
-    {
-        lista.inicio = aux->proximo; // Atualiza o início da lista
-        delete aux;                  // Libera a memória do nó removido
-        return;
+        return true;
     }
-
-    // Percorre a lista até a posição desejada
-    for (int i = 0; aux != NULL && i < posicao; i++)
-    {
-        anterior = aux;
-        aux = aux->proximo;
-    }
-
-    // Se aux for NULL, significa que a posição era inválida
-    if (aux == NULL)
-    {
-        cout << "Posição inválida" << endl;
-        return;
-    }
-
-    // Remove o elemento e ajusta os ponteiros
-    anterior->proximo = aux->proximo;
-    delete aux; // Libera a memória do nó removido
+    return false;
 }
 
 template <typename tipo>
-void bubbleSort(lista<tipo> &l)
+bool inserir_elemento_inicio(lista<tipo> &x, tipo novo)
 {
-    if (!l.inicio || !l.inicio->proximo)
-        return;
 
-    bool trocado;
-    elemento<tipo> *ptr;
-    elemento<tipo> *ultimo = NULL;
+    elemento<tipo> *novoElemento = new elemento<tipo>;
+    novoElemento->dado = novo;
+    novoElemento->proximo = NULL;
 
-    do
+    if (x.inicio == NULL)
     {
-        trocado = false;
-        ptr = l.inicio;
+        x.inicio = novoElemento; // No caso de nao haver nenhum elemento, o inicio aponta para o primeiro elemento
+        x.quantidade++;
+        return true;
+    }
+    else
+    {
 
-        while (ptr->proximo != NULL)
-        {
-            if (ptr->dado > ptr->proximo->dado)
-            {
-                tipo temp = ptr->dado;
-                ptr->dado = ptr->proximo->dado;
-                ptr->proximo->dado = temp;
-                trocado = true;
-            }
-            ptr = ptr->proximo;
-        }
-        ultimo = ptr;
-    } while (trocado);
+        novoElemento->proximo = x.inicio; // Ponteiro do novo elemento dinamico recebe o endereÃ§o que esta contido no ponteiro que aponta para o agora antigo primeiro elemento da lista
+        x.inicio = novoElemento;          // Inicio agora aponta para o endereco do novo elemento atraves do ponteiro que aponta pra o elemento dinamico, que possui o seu endereco
+
+        x.quantidade++;
+
+        return true;
+    }
+
+    return false;
 }
-// Particiona a lista usando o primeiro elemento como pivô
-template <typename TIPO>
-Telemento<TIPO> *particiona(Telemento<TIPO> *inicio, Telemento<TIPO> *fim)
-{
-    TIPO pivo = inicio->dado;
-    Telemento<TIPO> *i = inicio;
-    Telemento<TIPO> *j = inicio->proximo;
 
-    while (j != fim->proximo)
+template <typename tipo>
+bool inserir_elemento_posicao(lista<tipo> &x, tipo novo, int posicao)
+{
+
+    elemento<tipo> *novoElemento = new elemento<tipo>;
+    novoElemento->dado = novo;
+    novoElemento->proximo = NULL;
+
+    if (posicao > (x.quantidade + 1))
+    {
+        return false; // Cancela a insercao por conta da impossibilidade de inserir um elemento em uma posicao separada das demais ja inseridas
+    }
+
+    if (x.inicio == NULL)
+    {
+        x.inicio = novoElemento;
+        novoElemento->proximo = NULL;
+        x.quantidade++;
+        return true;
+    }
+
+    if (posicao <= x.quantidade && posicao > -1 && x.inicio != NULL)
+    {
+        int cont = 0;
+        elemento<tipo> *aux;
+        elemento<tipo> *fin;
+
+        while (cont < posicao)
+        {
+            if (cont == 0)
+            {
+                aux = x.inicio;
+                cont++;
+            }
+            else
+            {
+                aux = aux->proximo;
+                cont++;
+            }
+        }
+
+        fin = aux->proximo;
+        aux->proximo = novoElemento;
+        novoElemento->proximo = fin;
+
+        x.quantidade++;
+
+        return true;
+    }
+}
+
+template <typename tipo>
+bool remover_elemento_final(lista<tipo> &x)
+{
+
+    if (x.quantidade == 0)
+    {
+        return false;
+    }
+
+    elemento<tipo> *aux = x.inicio;
+    elemento<tipo> *removido;
+    elemento<tipo> *aux2 = x.inicio;
+
+    if (x.inicio->proximo == NULL)
+    {
+        removido = x.inicio;
+        delete removido;
+        x.inicio = NULL;
+        x.quantidade--;
+        return true;
+    }
+
+    while (aux->proximo != NULL)
+    {
+        aux2 = aux;
+        aux = aux->proximo;
+    }
+
+    removido = aux;
+    delete removido;
+    aux2->proximo = NULL;
+    x.quantidade--;
+
+    return true;
+}
+
+template <typename tipo>
+bool remover_elemento_inicio(lista<tipo> &x)
+{
+
+    if (x.quantidade == 0)
+    {
+        return false;
+    }
+
+    elemento<tipo> *removido = x.inicio;
+
+    if (x.inicio->proximo == NULL)
+    {
+        delete removido;
+        x.inicio = NULL;
+        x.quantidade--;
+        return true;
+    }
+
+    x.inicio = x.inicio->proximo;
+    delete removido;
+    x.quantidade--;
+    return true;
+}
+
+template <typename tipo>
+bool remover_elemento_posicao(lista<tipo> &x, int posicao)
+{
+
+    if (x.quantidade == 0)
+    {
+        return false;
+    }
+
+    elemento<tipo> *removido = x.inicio;
+
+    if (x.inicio->proximo == NULL)
+    {
+        delete removido;
+        x.inicio = NULL;
+        x.quantidade--;
+        return true;
+    }
+
+    if (posicao > x.quantidade)
+    {
+        return false;
+    }
+
+    if (posicao <= x.quantidade && posicao > -1)
+    {
+
+        elemento<tipo> *aux = x.inicio;
+        elemento<tipo> *aux2 = x.inicio;
+
+        while (cont < posicao)
+        {
+            aux2 = aux;
+            aux = aux->proximo;
+            cont++
+        }
+
+        removido = aux;
+        aux = aux->proximo;
+        aux2->proximo = aux;
+        delete removido;
+        x.quantidade--;
+        return true;
+    }
+}
+
+template <typename tipo>
+void bubblesort(lista<tipo> &x)
+{
+    int i, j, cond;
+    tipo tempDado;
+    elemento<tipo> *aux;
+
+    for (i = (x.quantidade - 1); (i >= 1) && (cond == 1); i--)
+    {
+        cond = 0;
+        aux = x.inicio;
+
+        for (j = 0; j < i; j++)
+        {
+            if (aux->dado > aux->proximo->dado)
+            {
+                tempDado = aux->dado;
+                aux->dado = aux->proximo->dado;
+                aux->proximo->dado = tempDado;
+                cond = 1;
+            }
+            aux = aux->proximo;
+        }
+    }
+}
+
+template <typename tipo>
+void quicksort(elemento<tipo> *inicio, elemento<tipo> *fim)
+{
+    if (inicio != NULL && inicio != fim && inicio != fim->proximo) // verifica se esta vazio, se tem 2 pelo menos e se o inicio nao passou do fim
+    {
+        elemento<tipo> *pivo = particiona(inicio, fim);
+
+        elemento<tipo> *aux = inicio;
+        while (aux != pivo) // percorre a lista desde o inicio ate achar o anterior do pivo
+        {
+            aux = aux->proximo;
+        }
+        // quick da esquerda
+        if (aux != NULL) // Se o anterior do pivo for NULL o pivo e o primeiro elemento do subarray
+        {
+            quicksort(inicio, aux); // tem que ser o anterior do pivo porque senao o pivo vai ser incluido denovo na lista
+        }
+
+        // quick da direita
+        quicksort(pivo->proximo, fim); // mesmo motivo do da esquerda so que nos temos o ponteiro do proximo do pivo ja
+    }
+}
+
+template <typename tipo>
+elemento<tipo> *particiona(elemento<tipo> *inicio, elemento<tipo> *fim)
+{
+    tipo pivo = fim->dado;
+    elemento<tipo> *i = inicio;
+    elemento<tipo> *j = inicio;
+
+    while (j != fim)
     {
         if (j->dado < pivo)
         {
+            swap(i->dado, j->dado); // troca i com J
             i = i->proximo;
-            TIPO temp = i->dado;
-            i->dado = j->dado;
-            j->dado = temp;
         }
         j = j->proximo;
     }
-    TIPO temp = inicio->dado;
-    inicio->dado = i->dado;
-    i->dado = temp;
-    return i;
+
+    swap(i->dado, fim->dado); // troca o I com o Pivo deixando o pivo no lugar certo
+
+    return i; // Retorna o ponteiro que aponta para onde o pivo deve estar
 }
 
-// QuickSort recursivo
-template <typename TIPO>
-void quickSortRec(Telemento<TIPO> *inicio, Telemento<TIPO> *fim)
-{
-    if (inicio != NULL && fim != NULL && inicio != fim)
-    {
-        Telemento<TIPO> *pivo = particiona(inicio, fim);
-
-        if (pivo != inicio)
-        {
-            Telemento<TIPO> *tmp = inicio;
-            while (tmp->proximo != pivo)
-            {
-                tmp = tmp->proximo;
-            }
-            quickSortRec(inicio, tmp);
-        }
-
-        quickSortRec(pivo->proximo, fim);
-    }
-}
-
-// Função para chamar o QuickSort na lista encadeada
-template <typename TIPO>
-void quickSort(ListaEncadeada<TIPO> &lista)
-{
-    if (lista.inicio == NULL)
-        return;
-
-    Telemento<TIPO> *fim = lista.inicio;
-    while (fim->proximo != NULL)
-    {
-        fim = fim->proximo;
-    }
-    quickSortRec(lista.inicio, fim);
-};
+#endif
