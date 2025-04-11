@@ -100,8 +100,61 @@ void inserePosicaoCircular(Tlista<TIPO> &lista, TIPO dado, int pos)
                 i++;
             }
             novoElemento->proximo = aux->proximo
-            aux->proximo = novoElemento;
+                                        aux->proximo = novoElemento;
             lista.quantidade++;
         }
     }
+}
+
+template <typename TIPO>
+void removeInicio(Tlista<TIPO> &lista)
+{
+    if (lista.quantidade == 0 && lista.inicio == NULL)
+    {
+        cout << "A lista esta vazia" << endl;
+    }
+    else
+    {
+        Telemento<TIPO> *aux = lista.inicio;
+        if (lista.inicio == lista.inicio->proximo)
+        {
+            lista.inicio = NULL;
+        }
+        else
+        {
+            while (aux->proximo != lista.inicio)
+            {
+                aux = aux->proximo;
+            }
+            lista.inicio = lista.inicio->proximo;
+            aux->proximo = lista.inicio;
+        }
+    }
+    lista.quantidade--;
+}
+
+template <typename TIPO>
+void removeFim(Tlista<TIPO> &lista)
+{
+    if (lista.quantidade == 0 && lista.inicio == NULL)
+    {
+        cout<<"A lista esta vazia nao e possivel remover"<<endl;
+    }
+    else
+    {
+        if (lista.inicio == lista.inicio->proximo)
+        {
+            lista.inicio = NULL;
+        }
+        else
+        {
+            Telemento<TIPO> *aux = lista.inicio;
+            while (aux->proximo->proximo != lista.inicio)
+            {
+                aux = aux->proximo;
+            }
+            aux->proximo = lista.inicio;
+        }
+    }
+    lista.quantidade--;
 }
